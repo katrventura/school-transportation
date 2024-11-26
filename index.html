@@ -1,515 +1,181 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<title>School transportation</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
-<style>
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scrolly template</title>
+
+
+  <style>
+    /* Scrolly Layout: Side-by-side containers */
+    .scrolly-layout {
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+      overflow: hidden;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 20px; /* Add spacing between the containers */
+    }
+  
+    /* Left: Image container */
+    .image-container {
+      flex: 7; /* 70% width */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px; /* Adjusted padding for better spacing */
+    }
+  
+    .image-container img {
+      max-width: 100%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+  
+    /* Right: Map container */
+    .map-container {
+      flex: 3; /* 30% width */
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+    }
+  
+    .map-container video {
+      width: 100%;
+      height: auto;
+      object-fit: cover; /* Fill the container while preserving aspect ratio */
+    }
+  
+    /* Steps container (scrollable overlay) */
+    .steps-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 70%;
+    overflow-y: auto;
+    z-index: 10;
+    }
+
+    /* Individual step */
+    .step {
+    background: rgba(255, 255, 255, 0.8);
+    margin-bottom: 50vh;
+    padding: 20px;
+    width: 315px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    }
+
+    .step:first-child {
+    margin-top: 100vh; 
+    }
+
+    .step:last-child {
+    margin-bottom: 100vh; 
+    }
+  
+    /* Responsive adjustments */
+    @media only screen and (max-width: 768px) {
+      .scrolly-layout {
+        flex-direction: column; /* Stack containers on smaller screens */
+        height: auto;
+      }
+  
+      .image-container,
+      .map-container {
+        flex: 1;
+        width: 100%;
+        padding: 10px;
+      }
+  
+      .steps-container {
+        position: static; /* Place inline below other content */
+        background: transparent; /* Remove background in smaller screens */
+        padding: 10px;
+      }
+  
+      .step {
+        margin-bottom: 30px; /* Reduce spacing between steps */
+        font-size: 14px;
+        padding: 15px;
+      }
+    }
+  </style>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
-<style>
-    button {
-        position: absolute;
-        margin: 20px;
-    }
 
-    #pause::after {
-        content: 'Pause';
-    }
+    <section>
+        <div class="scrolly-layout">
+          <div class="map-container">
+            <video id="video-map" autoplay muted>
+              <source src="assets/map.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+      
+          <div class="image-container">
+            <img id="dynamic-image" src="assets/image-1.jpg" alt="Dynamic Image">
+          </div>
+      
+          <div class="steps-container">
+            <div class="step" id="step1">
+                <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Sem velit placerat adipiscing fermentum; euismod ligula luctus sem.</p>
+            </div>
+            <div class="step" id="step2">
+                <p>Magna viverra hac libero nisl mauris placerat. Auctor aliquet integer sociosqu vehicula, tristique commodo.</p>
+            </div>
+            <div class="step" id="step3">
+                <p>Taciti tortor curae inceptos varius quisque eu ridiculus habitasse.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    #pause.pause::after {
-        content: 'Play';
-    }
-</style>
-<div id="map"></div>
+  <script>
+    // Set up the steps and their corresponding actions
+    const steps = [
+      { id: "step1", timestamp: 0, image: "assets/image-1.jpg" },
+      { id: "step2", timestamp: 3, image: "assets/image-2.jpg" },
+      { id: "step3", timestamp: 5, image: "assets/image-3.jpg" }
+    ];
 
-<!-- <script>
+    // Select the video and image elements
+    const video = document.getElementById("video-map");
+    const dynamicImage = document.getElementById("dynamic-image");
 
-    const defaultCenter = [-76.619, 39.292];
-    const defaultZoom = 11;
-    const marylandBounds = [[-79.4877, 37.8855], [-75.0489, 39.723]];
+    // Use IntersectionObserver to watch for step visibility
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const stepId = entry.target.id;
+          const step = steps.find(s => s.id === stepId);
 
-
-	mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
-        center: defaultCenter,
-        zoom: defaultZoom,
-        maxBounds: marylandBounds
-    });
-
-    const speedFactor = 50; // Adjust animation speed
-    let animation; // Animation frame ID
-    let progress = 0;
-    let resetTime = false;
-    let startTime = 0;
-
-map.on('load', () => {
-        map.addSource('line', {
-            'type': 'vector',
-            'url': 'mapbox://ryanlittle.burin97r'
-        });
-
-        // add the line which will be modified in the animation
-        map.addLayer({
-            'id': 'line-animation',
-            'type': 'line',
-            'source': 'line',
-            'source-layer': 'brooke_bourne_test-41zn9m',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#999',
-                'line-width': 3,
-                'line-opacity': 0.5
-            }
-        });
-
-        map.addSource('line-animation', {
-        'type': 'geojson',
-        'data': {
-            'type': 'FeatureCollection',
-            'features': [
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'LineString',
-                        'coordinates': []
-                    }
-                }
-            ]
+          // Update the video timestamp and image
+          if (step) {
+            video.currentTime = step.timestamp;
+            video.pause(); // Pause the video at each step
+            dynamicImage.src = step.image; // Change the image
+          }
         }
-    });
+      });
+    }, { threshold: 0.6 }); // Trigger when 60% of a step is visible
 
-
-        map.addLayer({
-            'id': 'line-animated',
-            'type': 'line',
-            'source': 'line-animation',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#ed6498',
-                'line-width': 5,
-                'line-opacity': 0.8
-            }
-        });
-
-        map.on('idle', () => {
-        const features = map.querySourceFeatures('line', {
-            sourceLayer: 'brooke_bourne_test-41zn9m'
-        });
-
-        console.log('Queried Features:', features);
-
-        // Filter all features with the same `from_id`
-        const targetFeatures = features.filter(feature => feature.properties.from_id === 'x24510080800');
-
-        if (!targetFeatures || targetFeatures.length === 0) {
-            console.error('No target features found.');
-            return;
-        }
-
-        console.log('Target Features:', targetFeatures);
-
-        // Sort features by segment to ensure proper order
-        targetFeatures.sort((a, b) => a.properties.segment - b.properties.segment);
-
-        // Combine all segment coordinates
-        const combinedCoordinates = targetFeatures
-            .map(feature => feature.geometry.coordinates)
-            .flat();
-
-        // Remove duplicate points to ensure a smooth line
-        const uniqueCoordinates = combinedCoordinates.filter((coord, index, self) => {
-            return (
-                index === 0 ||
-                coord[0] !== self[index - 1][0] ||
-                coord[1] !== self[index - 1][1]
-            );
-        });
-
-        console.log('Combined Coordinates:', uniqueCoordinates);
-
-        if (!uniqueCoordinates || uniqueCoordinates.length === 0) {
-            console.error('No coordinates found for the combined route.');
-            return;
-        }
-
-        // Start animation with the combined coordinates
-        startTime = performance.now();
-        animateLine(uniqueCoordinates);
-
-        function animateLine(coordinates, timestamp) {
-            if (resetTime) {
-                startTime = performance.now() - progress;
-                resetTime = false;
-            } else {
-                progress = timestamp - startTime;
-            }
-
-            // Restart animation if it completes
-            if (progress > speedFactor * coordinates.length) {
-                startTime = performance.now();
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: [] // Reset to start the animation cleanly
-                            }
-                        }
-                    ]
-                });
-                return; // Exit the frame to restart cleanly
-            }
-
-            const currentIndex = Math.floor(progress / speedFactor);
-            if (currentIndex < coordinates.length) {
-                const partialCoordinates = coordinates.slice(0, currentIndex + 1);
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: partialCoordinates
-                            }
-                        }
-                    ]
-                });
-            }
-
-            animation = requestAnimationFrame((timestamp) => animateLine(coordinates, timestamp));
-        }
-    });
-});
-
-map.on('load', () => {
-        map.addSource('line', {
-            'type': 'vector',
-            'url': 'mapbox://ryanlittle.4nii0qtk'
-        });
-
-        // add the line which will be modified in the animation
-        map.addLayer({
-            'id': 'line-animation',
-            'type': 'line',
-            'source': 'line',
-            'source-layer': 'angie_castro_test-899rrk',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#999',
-                'line-width': 3,
-                'line-opacity': 0.5
-            }
-        });
-
-        map.addSource('line-animation', {
-        'type': 'geojson',
-        'data': {
-            'type': 'FeatureCollection',
-            'features': [
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'LineString',
-                        'coordinates': []
-                    }
-                }
-            ]
-        }
-    });
-
-
-        map.addLayer({
-            'id': 'line-animated',
-            'type': 'line',
-            'source': 'line-animation',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#ed6498',
-                'line-width': 5,
-                'line-opacity': 0.8
-            }
-        });
-
-        map.on('idle', () => {
-        const features = map.querySourceFeatures('line', {
-            sourceLayer: 'angie_castro_test-899rrk'
-        });
-
-        console.log('Queried Features:', features);
-
-        // Filter all features with the same `from_id`
-        const targetFeatures = features.filter(feature => feature.properties.from_id === 'x24510260605');
-
-        if (!targetFeatures || targetFeatures.length === 0) {
-            console.error('No target features found.');
-            return;
-        }
-
-        console.log('Target Features:', targetFeatures);
-
-        // Sort features by segment to ensure proper order
-        targetFeatures.sort((a, b) => a.properties.segment - b.properties.segment);
-
-        // Combine all segment coordinates
-        const combinedCoordinates = targetFeatures
-            .map(feature => feature.geometry.coordinates)
-            .flat();
-
-        // Remove duplicate points to ensure a smooth line
-        const uniqueCoordinates = combinedCoordinates.filter((coord, index, self) => {
-            return (
-                index === 0 ||
-                coord[0] !== self[index - 1][0] ||
-                coord[1] !== self[index - 1][1]
-            );
-        });
-
-        console.log('Combined Coordinates:', uniqueCoordinates);
-
-        if (!uniqueCoordinates || uniqueCoordinates.length === 0) {
-            console.error('No coordinates found for the combined route.');
-            return;
-        }
-
-        // Start animation with the combined coordinates
-        startTime = performance.now();
-        animateLine(uniqueCoordinates);
-
-        function animateLine(coordinates, timestamp) {
-            if (resetTime) {
-                startTime = performance.now() - progress;
-                resetTime = false;
-            } else {
-                progress = timestamp - startTime;
-            }
-
-            // Restart animation if it completes
-            if (progress > speedFactor * coordinates.length) {
-                startTime = performance.now();
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: [] // Reset to start the animation cleanly
-                            }
-                        }
-                    ]
-                });
-                return; // Exit the frame to restart cleanly
-            }
-
-            const currentIndex = Math.floor(progress / speedFactor);
-            if (currentIndex < coordinates.length) {
-                const partialCoordinates = coordinates.slice(0, currentIndex + 1);
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: partialCoordinates
-                            }
-                        }
-                    ]
-                });
-            }
-
-            animation = requestAnimationFrame((timestamp) => animateLine(coordinates, timestamp));
-        }
-    });
-});
-</script>  -->
-
-<script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
-        center: [-76.619, 39.292],
-        zoom: 11,
-        maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]]
-    });
-
-    const speedFactor = 50;
-
-    map.on('load', () => {
-        // Line animation 1
-        addLineAnimation({
-            map: map,
-            vectorSourceId: 'line1',
-            vectorSourceUrl: 'mapbox://ryanlittle.burin97r',
-            sourceLayer: 'brooke_bourne_test-41zn9m',
-            fromId: 'x24510080800',
-            lineColor: '#ed6498'
-        });
-
-        // Line animation 2
-        addLineAnimation({
-            map: map,
-            vectorSourceId: 'line2',
-            vectorSourceUrl: 'mapbox://ryanlittle.4nii0qtk',
-            sourceLayer: 'angie_castro_test-899rrk',
-            fromId: 'x24510260605',
-            lineColor: '#6495ed'
-        });
-    });
-
-    function addLineAnimation({ map, vectorSourceId, vectorSourceUrl, sourceLayer, fromId, lineColor }) {
-        const staticLineId = `${vectorSourceId}-static-line`;
-        const animatedSourceId = `${vectorSourceId}-animated-source`;
-        const animatedLineId = `${vectorSourceId}-animated-line`;
-
-        // Add vector source for static line
-        map.addSource(vectorSourceId, {
-            type: 'vector',
-            url: vectorSourceUrl
-        });
-
-        // Add static line layer
-        map.addLayer({
-            id: staticLineId,
-            type: 'line',
-            source: vectorSourceId,
-            'source-layer': sourceLayer,
-            layout: {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            paint: {
-                'line-color': '#999',
-                'line-width': 3,
-                'line-opacity': 0.5
-            }
-        });
-
-        // Add GeoJSON source for animated line
-        map.addSource(animatedSourceId, {
-            type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: [
-                    {
-                        type: 'Feature',
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: []
-                        }
-                    }
-                ]
-            }
-        });
-
-        // Add animated line layer
-        map.addLayer({
-            id: animatedLineId,
-            type: 'line',
-            source: animatedSourceId,
-            layout: {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            paint: {
-                'line-color': lineColor,
-                'line-width': 5,
-                'line-opacity': 0.8
-            }
-        });
-
-        // Query features and start animation
-        map.on('idle', () => {
-            const features = map.querySourceFeatures(vectorSourceId, {
-                sourceLayer: sourceLayer
-            });
-
-            if (!features || features.length === 0) {
-                console.error(`No features found in source layer: ${sourceLayer}`);
-                return;
-            }
-
-            const targetFeatures = features.filter(
-                (feature) => feature.properties.from_id === fromId
-            );
-
-            if (!targetFeatures || targetFeatures.length === 0) {
-                console.error(`No target features found for ID: ${fromId}`);
-                return;
-            }
-
-            // Sort and combine coordinates
-            targetFeatures.sort((a, b) => a.properties.segment - b.properties.segment);
-
-            const combinedCoordinates = targetFeatures
-                .map((feature) => feature.geometry.coordinates)
-                .flat();
-
-            if (combinedCoordinates.length === 0) {
-                console.error('No coordinates available for animation.');
-                return;
-            }
-
-            // Start the animation
-            let startTime = performance.now();
-            function animateLine(timestamp) {
-                const progress = timestamp - startTime;
-
-                // Determine which segment of the line to display
-                const currentIndex = Math.floor(progress / speedFactor);
-
-                if (currentIndex >= combinedCoordinates.length) {
-                    startTime = timestamp; // Restart animation
-                    return;
-                }
-
-                const partialCoordinates = combinedCoordinates.slice(0, currentIndex + 1);
-
-                map.getSource(animatedSourceId).setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: partialCoordinates
-                            }
-                        }
-                    ]
-                });
-
-                requestAnimationFrame(animateLine);
-            }
-
-            requestAnimationFrame(animateLine);
-        });
-    }
-</script>
-
+    // Observe each step
+    document.querySelectorAll(".step").forEach(step => observer.observe(step));
+  </script>
 
 </body>
+
 </html>
