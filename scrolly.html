@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scrolly template</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-size: 20px;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      text-rendering: optimizeLegibility;
+    }
+
+    iframe,
+    img,
+    video {
+      max-width: 100%;
+    }
+
+    p {
+      line-height: 1.6;
+      margin: 0;
+      padding-bottom: 1.2em;
+    }
+
+    ul {
+      margin: 0;
+      padding-bottom: 1em;
+      line-height: 1.6;
+    }
+
+    iframe {
+      padding-bottom: 1.2em;
+    }
+
+    code {
+      font-family: 'Courier New', monospace;
+      background: #fff880;
+    }
+
+    /* margin on mobile */
+    @media (max-width: 640px) {
+      body {
+        font-size: 18px;
+      }
+
+      .content {
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+      }
+    }
+  </style>
+  <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollama/3.2.0/scrollama.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.3.0/d3.min.js"></script>
+</head>
+
+<body>
+  <section id="scrolly-images" class="scrolly-container">
+    <div class="sticky-thing">
+      <img src="assets/image-1.jpg">
+    </div>
+    <div class="steps-container">
+      <div class="step" id="step1">
+        <div>
+          <p>Step one, adjust the CSS at the bottom of this page to change spacing between steps.</p>
+          <p>Here is some more text, in case there are multiple paragraphs.</p>
+        </div>
+      </div>
+      <div class="step" id="step2">
+        <p>Find the JavaScript code near the bottom to associate each step with an image change.</p>
+      </div>
+      <div class="step" id="step3">
+        <p>By default, the steps are a set width and the text is left-centered. Find the rule in
+          <code>scrolly-styles.css</code> that refers to <code>.step > *</code> to adjust or remove the width, center
+          the text, or change the background color/opacity.</p>
+      </div>
+      <div class="step" id="step4">
+        <p>Step four, lorem ipsum dolor sic amet.</p>
+      </div>
+      <div class="step" id="step5">
+        <p>Step five, lorem ipsum dolor sic amet.</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (() => {
+      const scroller = scrollama()
+
+      scroller
+        .setup({
+          parent: document.querySelector("#scrolly-images"),
+          step: ".step",
+          offset: 0.6,
+          debug: false,
+        })
+        .onStepEnter(function ({ element, index, direction }) {
+          const event = new CustomEvent("stepin", { detail: { direction: direction } })
+          element.dispatchEvent(event)
+        })
+        .onStepExit(function ({ element, index, direction }) {
+          const event = new CustomEvent("stepout", { detail: { direction: direction } })
+          if (direction === "up" && element.previousElementSibling) {
+            const event = new CustomEvent("stepin", { detail: { direction: direction } })
+            element.previousElementSibling.dispatchEvent(event)
+          }
+        })
+
+      window.addEventListener("resize", scroller.resize)
+    })()
+
+    d3.select("#step1").on('stepin', (e) => {
+      d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "assets/image-2.jpg")
+    })
+
+    d3.select("#step2").on('stepin', (e) => {
+      d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "assets/image-3.jpg")
+    })
+
+    d3.select("#step3").on('stepin', (e) => {
+      d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "assets/image-1.jpg")
+    })
+
+    d3.select("#step4").on('stepin', (e) => {
+      d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "assets/image-2.jpg")
+    })
+
+    d3.select("#step5").on('stepin', (e) => {
+      d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "assets/image-3.jpg")
+    })
+  </script>
+  <style>
+
+    .step {
+      margin-bottom: 70vh;
+    }
+
+    .scrolly-container {
+    position: relative;
+    margin-bottom: 1.2em;
+    display: flex;
+    justify-content: flex-end;
+    }
+
+    .sticky-thing {
+        position: sticky;
+        top: 0;
+        right: 0;
+        transform: translate(0px, 0px);
+        z-index: 0;
+        height: 100svh;
+        width: 100vw;
+        margin: 0;
+        overflow: hidden;
+        display: flex;
+        justify-content: flex-end;
+        /* display: flex;
+        justify-content: center;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden; */
+    }
+
+    .sticky-thing > img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: flex; 
+        justify-content: flex-end; 
+    }
+
+    .video-container {
+        position: sticky;
+        top: 0;
+        z-index: -1;
+    }
+
+    .scrolly-container video {
+        position: absolute;
+        top: 0;
+        height: auto;
+        width: 100%;
+    }
+
+    .sticky-thing iframe {
+        position: absolute;
+        top: 0;
+        max-width: 100%;
+        min-height: 100vh;
+    }
+
+    .steps-container {
+        transform: translate3d(0,0,0);
+        position: relative;
+        padding: 0;
+        z-index: 10;
+        max-width: 35rem;
+        margin: 0 auto;
+        padding-bottom: 4em;
+    }
+
+    .step {
+        color: black;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 50svh;
+        transform: translate(0px, 0px);
+    }
+
+    .step p {
+        text-align: left;
+    }
+
+    .step p:last-child {
+        padding: 0;
+    }
+
+    .step > * {
+        width: 700px;
+        margin-left: 1.3em;
+        margin-right: 1.3em;
+        text-align: center;
+        padding: 1.2em !important;
+        background-color: #ffa880cc;
+    }
+
+    .sticky-thing > canvas {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover;
+        display: block;  
+    }
+
+@media only screen and (min-width: 700px) {
+    .scrolly-container.side-by-side {
+        display: flex;
+    }
+
+    .scrolly-container.side-by-side>div {
+        flex-basis: 0;
+        flex-grow: 1;
+        flex-shrink: 1;
+        padding: 0.75em;
+    }
+
+    .scrolly-container.side-by-side .scrolly-overlay {
+        margin-top: 70vh;
+        order: 0;
+        /* Change these to adjust sizing options */
+        min-width: 15rem;
+        max-width: 20rem;
+    }
+
+    .scrolly-container.side-by-side .sticky-thing {
+        order: 1;
+        flex-grow: 2;
+    }
+}
+  </style>
+
+</body>
+
+</html>
