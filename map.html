@@ -1,403 +1,240 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>School transportation</title>
-<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
-<style>
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-</style>
+    <meta charset="utf-8">
+    <title>School Transportation Route</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        .scrolly-layout {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            height: 100vh;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .steps-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 70%;
+            overflow-y: auto;
+            z-index: 10;
+            padding: 0 20px;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 50vh;
+            padding: 25px;
+            width: 315px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step:first-child {
+            margin-top: 100vh;
+        }
+
+        .step:last-child {
+            margin-bottom: 100vh;
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        p {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .mode-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .mode-walking {
+            background: #6ea5e4;
+            color: white;
+        }
+
+        .mode-bus {
+            background: #f7c96e;
+            color: white;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .scrolly-layout {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .map-container {
+                height: 50vh;
+            }
+
+            .steps-container {
+                position: relative;
+                width: 100%;
+                padding: 10px;
+            }
+
+            .step {
+                width: auto;
+                margin-bottom: 30px;
+            }
+
+            .step:first-child {
+                margin-top: 20px;
+            }
+
+            .step:last-child {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-<style>
-    button {
-        position: absolute;
-        margin: 20px;
-    }
-
-    #pause::after {
-        content: 'Pause';
-    }
-
-    #pause.pause::after {
-        content: 'Play';
-    }
-</style>
-<div id="map"></div>
-
-<!-- <script>
-
-    const defaultCenter = [-76.619, 39.292];
-    const defaultZoom = 11;
-    const marylandBounds = [[-79.4877, 37.8855], [-75.0489, 39.723]];
-
-
-	mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
-        center: defaultCenter,
-        zoom: defaultZoom,
-        maxBounds: marylandBounds
-    });
-
-    const speedFactor = 50; // Adjust animation speed
-    let animation; // Animation frame ID
-    let progress = 0;
-    let resetTime = false;
-    let startTime = 0;
-
-map.on('load', () => {
-        map.addSource('line', {
-            'type': 'vector',
-            'url': 'mapbox://ryanlittle.burin97r'
-        });
-
-        // add the line which will be modified in the animation
-        map.addLayer({
-            'id': 'line-animation',
-            'type': 'line',
-            'source': 'line',
-            'source-layer': 'brooke_bourne_test-41zn9m',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#999',
-                'line-width': 3,
-                'line-opacity': 0.5
-            }
-        });
-
-        map.addSource('line-animation', {
-        'type': 'geojson',
-        'data': {
-            'type': 'FeatureCollection',
-            'features': [
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'LineString',
-                        'coordinates': []
-                    }
-                }
-            ]
-        }
-    });
-
-
-        map.addLayer({
-            'id': 'line-animated',
-            'type': 'line',
-            'source': 'line-animation',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#ed6498',
-                'line-width': 5,
-                'line-opacity': 0.8
-            }
-        });
-
-        map.on('idle', () => {
-        const features = map.querySourceFeatures('line', {
-            sourceLayer: 'brooke_bourne_test-41zn9m'
-        });
-
-        console.log('Queried Features:', features);
-
-        // Filter all features with the same `from_id`
-        const targetFeatures = features.filter(feature => feature.properties.from_id === 'x24510080800');
-
-        if (!targetFeatures || targetFeatures.length === 0) {
-            console.error('No target features found.');
-            return;
-        }
-
-        console.log('Target Features:', targetFeatures);
-
-        // Sort features by segment to ensure proper order
-        targetFeatures.sort((a, b) => a.properties.segment - b.properties.segment);
-
-        // Combine all segment coordinates
-        const combinedCoordinates = targetFeatures
-            .map(feature => feature.geometry.coordinates)
-            .flat();
-
-        // Remove duplicate points to ensure a smooth line
-        const uniqueCoordinates = combinedCoordinates.filter((coord, index, self) => {
-            return (
-                index === 0 ||
-                coord[0] !== self[index - 1][0] ||
-                coord[1] !== self[index - 1][1]
-            );
-        });
-
-        console.log('Combined Coordinates:', uniqueCoordinates);
-
-        if (!uniqueCoordinates || uniqueCoordinates.length === 0) {
-            console.error('No coordinates found for the combined route.');
-            return;
-        }
-
-        // Start animation with the combined coordinates
-        startTime = performance.now();
-        animateLine(uniqueCoordinates);
-
-        function animateLine(coordinates, timestamp) {
-            if (resetTime) {
-                startTime = performance.now() - progress;
-                resetTime = false;
-            } else {
-                progress = timestamp - startTime;
-            }
-
-            // Restart animation if it completes
-            if (progress > speedFactor * coordinates.length) {
-                startTime = performance.now();
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: [] // Reset to start the animation cleanly
-                            }
-                        }
-                    ]
-                });
-                return; // Exit the frame to restart cleanly
-            }
-
-            const currentIndex = Math.floor(progress / speedFactor);
-            if (currentIndex < coordinates.length) {
-                const partialCoordinates = coordinates.slice(0, currentIndex + 1);
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: partialCoordinates
-                            }
-                        }
-                    ]
-                });
-            }
-
-            animation = requestAnimationFrame((timestamp) => animateLine(coordinates, timestamp));
-        }
-    });
-});
-
-map.on('load', () => {
-        map.addSource('line', {
-            'type': 'vector',
-            'url': 'mapbox://ryanlittle.4nii0qtk'
-        });
-
-        // add the line which will be modified in the animation
-        map.addLayer({
-            'id': 'line-animation',
-            'type': 'line',
-            'source': 'line',
-            'source-layer': 'angie_castro_test-899rrk',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#999',
-                'line-width': 3,
-                'line-opacity': 0.5
-            }
-        });
-
-        map.addSource('line-animation', {
-        'type': 'geojson',
-        'data': {
-            'type': 'FeatureCollection',
-            'features': [
-                {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': 'LineString',
-                        'coordinates': []
-                    }
-                }
-            ]
-        }
-    });
-
-
-        map.addLayer({
-            'id': 'line-animated',
-            'type': 'line',
-            'source': 'line-animation',
-            'layout': {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            'paint': {
-                'line-color': '#ed6498',
-                'line-width': 5,
-                'line-opacity': 0.8
-            }
-        });
-
-        map.on('idle', () => {
-        const features = map.querySourceFeatures('line', {
-            sourceLayer: 'angie_castro_test-899rrk'
-        });
-
-        console.log('Queried Features:', features);
-
-        // Filter all features with the same `from_id`
-        const targetFeatures = features.filter(feature => feature.properties.from_id === 'x24510260605');
-
-        if (!targetFeatures || targetFeatures.length === 0) {
-            console.error('No target features found.');
-            return;
-        }
-
-        console.log('Target Features:', targetFeatures);
-
-        // Sort features by segment to ensure proper order
-        targetFeatures.sort((a, b) => a.properties.segment - b.properties.segment);
-
-        // Combine all segment coordinates
-        const combinedCoordinates = targetFeatures
-            .map(feature => feature.geometry.coordinates)
-            .flat();
-
-        // Remove duplicate points to ensure a smooth line
-        const uniqueCoordinates = combinedCoordinates.filter((coord, index, self) => {
-            return (
-                index === 0 ||
-                coord[0] !== self[index - 1][0] ||
-                coord[1] !== self[index - 1][1]
-            );
-        });
-
-        console.log('Combined Coordinates:', uniqueCoordinates);
-
-        if (!uniqueCoordinates || uniqueCoordinates.length === 0) {
-            console.error('No coordinates found for the combined route.');
-            return;
-        }
-
-        // Start animation with the combined coordinates
-        startTime = performance.now();
-        animateLine(uniqueCoordinates);
-
-        function animateLine(coordinates, timestamp) {
-            if (resetTime) {
-                startTime = performance.now() - progress;
-                resetTime = false;
-            } else {
-                progress = timestamp - startTime;
-            }
-
-            // Restart animation if it completes
-            if (progress > speedFactor * coordinates.length) {
-                startTime = performance.now();
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: [] // Reset to start the animation cleanly
-                            }
-                        }
-                    ]
-                });
-                return; // Exit the frame to restart cleanly
-            }
-
-            const currentIndex = Math.floor(progress / speedFactor);
-            if (currentIndex < coordinates.length) {
-                const partialCoordinates = coordinates.slice(0, currentIndex + 1);
-                map.getSource('line-animation').setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: partialCoordinates
-                            }
-                        }
-                    ]
-                });
-            }
-
-            animation = requestAnimationFrame((timestamp) => animateLine(coordinates, timestamp));
-        }
-    });
-});
-</script>  -->
+    <div class="scrolly-layout">
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="steps-container">
+                <div class="step" data-segment="1">
+                    <div class="mode-tag mode-bus">Bus</div>
+                    <h3>Downtown Transfer</h3>
+                    <p>A'Nya takes the #71 bus at 6:15 AM to downtown Baltimore.</p>
+                    <p><strong>Route:</strong> From home to downtown transfer point</p>
+                </div>
+    
+                <div class="step" data-segment="2">
+                    <div class="mode-tag mode-walking">Walk</div>
+                    <h3>Transfer Point</h3>
+                    <p>She gets off at Calvert and Redwood, then walks to the next bus stop at Charles Street.</p>
+                    <p><strong>Location:</strong> Near Planet Fitness on Charles Street</p>
+                </div>
+    
+                <div class="step" data-segment="3">
+                    <div class="mode-tag mode-bus">Bus</div>
+                    <h3>Final Bus Ride</h3>
+                    <p>From Charles Street, she takes either the Green or Silver line bus heading north.</p>
+                    <p><strong>Stop:</strong> Gets off at 35th Street and the Alameda</p>
+                </div>
+    
+                <div class="step" data-segment="4">
+                    <div class="mode-tag mode-walking">Walk</div>
+                    <h3>Arrival at School</h3>
+                    <p>She walks down 35th Street to reach the side entrance of MERVO High School.</p>
+                    <p><strong>Destination:</strong> Mergenthaler Vocational Technical High School</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+
+mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
     const map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
         center: [-76.619, 39.292],
         zoom: 11,
         maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]]
     });
 
-    const speedFactor = 50;
+    let currentSegment = 1;
+    let animationFrameId = null;
 
-    map.on('load', () => {
-        // Line animation 1
-        addLineAnimation({
-            map: map,
-            vectorSourceId: 'line1',
-            vectorSourceUrl: 'ryanlittle.2qd1jbmd',
-            sourceLayer: 'anya_route_test-47tz0b',
-            fromId: 'x24510250204',
-            lineColor: '#ed6498'
-        });
+    // Then add the markers
+    const points = [
+        {
+            coordinates: [-76.59105799325397, 39.33271447357723],
+            title: 'Mergenthaler High School'
+        }
+    ];
 
-        // // Line animation 2
-        addLineAnimation({
-            map: map,
-            vectorSourceId: 'line2',
-            vectorSourceUrl: 'mapbox://ryanlittle.4nii0qtk',
-            sourceLayer: 'angie_castro_test-899rrk',
-            fromId: 'x24510260605',
-            lineColor: '#6495ed'
-        });
+    // Add markers to the map
+    points.forEach(point => {
+        const marker = new mapboxgl.Marker()
+            .setLngLat(point.coordinates)
+            .setPopup(new mapboxgl.Popup().setHTML(`
+                <h3>${point.title}</h3>
+            `))
+            .addTo(map);
     });
 
-    function addLineAnimation({ map, vectorSourceId, vectorSourceUrl, sourceLayer, fromId, lineColor }) {
-        const staticLineId = `${vectorSourceId}-static-line`;
-        const animatedSourceId = `${vectorSourceId}-animated-source`;
-        const animatedLineId = `${vectorSourceId}-animated-line`;
-
-        // Add vector source for static line
-        map.addSource(vectorSourceId, {
-            type: 'vector',
-            url: vectorSourceUrl
+    // Then initialize scrollytelling
+    const steps = document.querySelectorAll('.step');
+    
+    // Intersection Observer for scroll detection
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const segment = parseInt(entry.target.dataset.segment);
+                const activeStep = document.querySelector('.step.active');
+                if (activeStep) {
+                    activeStep.classList.remove('active');
+                }
+                entry.target.classList.add('active');
+                animateSegment(segment);
+            }
         });
+    }, {
+        threshold: 0.6
+    });
 
+    steps.forEach(step => observer.observe(step));
+
+    map.on('load', () => {
+        // Add vector source for static line
+        map.addSource('route', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.00kaja4r'
+        });
+        console.log('Vector source added');
+    
         // Add static line layer
         map.addLayer({
-            id: staticLineId,
+            id: 'static-route',
             type: 'line',
-            source: vectorSourceId,
-            'source-layer': sourceLayer,
+            source: 'route',
+            'source-layer': 'anya_route-8pmuhg',  // Make sure this matches your tileset layer name
             layout: {
                 'line-cap': 'round',
                 'line-join': 'round'
@@ -405,111 +242,111 @@ map.on('load', () => {
             paint: {
                 'line-color': '#999',
                 'line-width': 3,
-                'line-opacity': 0.5
+                'line-opacity': 0.2
             }
         });
-
-        // Add GeoJSON source for animated line
-        map.addSource(animatedSourceId, {
+    
+        // Add animated line source and layer
+        map.addSource('animated-route', {
             type: 'geojson',
             data: {
                 type: 'FeatureCollection',
-                features: [
-                    {
-                        type: 'Feature',
-                        geometry: {
-                            type: 'LineString',
-                            coordinates: []
-                        }
-                    }
-                ]
+                features: []
             }
         });
-
-        // Add animated line layer
+    
         map.addLayer({
-            id: animatedLineId,
+            id: 'animated-route',
             type: 'line',
-            source: animatedSourceId,
+            source: 'animated-route',
             layout: {
                 'line-cap': 'round',
                 'line-join': 'round'
             },
             paint: {
-                'line-color': lineColor,
-                'line-width': 5,
-                'line-opacity': 0.8
+                'line-color': [
+                    'match',
+                    ['get', 'mode'],
+                    'WALK', '#4A90E2',
+                    'BUS', '#f7c96e',
+                    '#ed6498'
+                ],
+                'line-width': 7,
+                'line-opacity': 1
             }
         });
-
-        // Query features and start animation
-        map.on('idle', () => {
-            const features = map.querySourceFeatures(vectorSourceId, {
-                sourceLayer: sourceLayer
-            });
-
-            if (!features || features.length === 0) {
-                console.error(`No features found in source layer: ${sourceLayer}`);
-                return;
-            }
-
-            const targetFeatures = features.filter(
-                (feature) => feature.properties.from_id === fromId
-            );
-
-            if (!targetFeatures || targetFeatures.length === 0) {
-                console.error(`No target features found for ID: ${fromId}`);
-                return;
-            }
-
-            // Sort and combine coordinates
-            targetFeatures.sort((a, b) => a.properties.segment - b.properties.segment);
-
-            const combinedCoordinates = targetFeatures
-                .map((feature) => feature.geometry.coordinates)
-                .flat();
-
-            if (combinedCoordinates.length === 0) {
-                console.error('No coordinates available for animation.');
-                return;
-            }
-
-            // Start the animation
-            let startTime = performance.now();
-            function animateLine(timestamp) {
-                const progress = timestamp - startTime;
-
-                // Determine which segment of the line to display
-                const currentIndex = Math.floor(progress / speedFactor);
-
-                if (currentIndex >= combinedCoordinates.length) {
-                    startTime = timestamp; // Restart animation
-                    return;
-                }
-
-                const partialCoordinates = combinedCoordinates.slice(0, currentIndex + 1);
-
-                map.getSource(animatedSourceId).setData({
-                    type: 'FeatureCollection',
-                    features: [
-                        {
-                            type: 'Feature',
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: partialCoordinates
-                            }
-                        }
-                    ]
+    
+        // Debug: Check source data loading
+        map.on('sourcedata', (e) => {
+            if (e.sourceId === 'route' && e.isSourceLoaded) {
+                console.log('Checking source features...');
+                const features = map.querySourceFeatures('route', {
+                    sourceLayer: 'anya_route-8pmuhg'
                 });
-
-                requestAnimationFrame(animateLine);
+                console.log('Available features:', features);
             }
-
-            requestAnimationFrame(animateLine);
         });
-    }
-</script>
+    });
+    
+    function animateSegment(segment) {
+        console.log('Animating segment:', segment);
 
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+    
+        const features = map.querySourceFeatures('route', {
+            sourceLayer: 'anya_route-8pmuhg'
+        });
+    
+        console.log('Features for segment:', segment, features);
+    
+        const segmentFeatures = features
+            .filter(feature => feature.properties.segment <= segment)
+            .sort((a, b) => a.properties.segment - b.properties.segment);
+    
+        if (!segmentFeatures.length) {
+            console.log('No features found for segment:', segment);
+            return;
+        }
+    
+        // Create new features preserving mode property
+        const animatedFeatures = segmentFeatures.map(feature => ({
+            type: 'Feature',
+            properties: {
+                mode: feature.properties.mode,
+                segment: feature.properties.segment
+            },
+            geometry: feature.geometry
+        }));
+    
+        // Update the animated line
+        map.getSource('animated-route').setData({
+            type: 'FeatureCollection',
+            features: animatedFeatures
+        });
+    
+        // Calculate bounds
+        const coordinates = [];
+        animatedFeatures.forEach(feature => {
+            if (feature.geometry && feature.geometry.coordinates) {
+                coordinates.push(...feature.geometry.coordinates);
+            }
+        });
+    
+        if (coordinates.length > 0) {
+            const bounds = coordinates.reduce((bounds, coord) => {
+                return bounds.extend(coord);
+            }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    
+            map.fitBounds(bounds, {
+                padding: { top: 50, bottom: 50, left: 50, right: 350 },
+                duration: 1000
+            });
+        }
+    }
+
+</script>
 
 </body>
 </html>
