@@ -1,181 +1,352 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scrolly template</title>
+    <meta charset="utf-8">
+    <title>School Transportation Route</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        .scrolly-layout {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
 
+        .map-container {
+            flex: 1;
+            position: relative;
+            height: 100vh;
+        }
 
-  <style>
-    /* Scrolly Layout: Side-by-side containers */
-    .scrolly-layout {
-      display: flex;
-      flex-direction: row;
-      height: 100vh;
-      overflow: hidden;
-      max-width: 1200px;
-      margin: 0 auto;
-      gap: 20px; /* Add spacing between the containers */
-    }
-  
-    /* Left: Image container */
-    .image-container {
-      flex: 7; /* 70% width */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px; /* Adjusted padding for better spacing */
-    }
-  
-    .image-container img {
-      max-width: 100%;
-      max-height: 90%;
-      object-fit: contain;
-    }
-  
-    /* Right: Map container */
-    .map-container {
-      flex: 3; /* 30% width */
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px;
-    }
-  
-    .map-container video {
-      width: 100%;
-      height: auto;
-      object-fit: cover; /* Fill the container while preserving aspect ratio */
-    }
-  
-    /* Steps container (scrollable overlay) */
-    .steps-container {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 70%;
-    overflow-y: auto;
-    z-index: 10;
-    }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
 
-    /* Individual step */
-    .step {
-    background: rgba(255, 255, 255, 0.8);
-    margin-bottom: 50vh;
-    padding: 20px;
-    width: 315px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+        .steps-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 70%;
+            overflow-y: auto;
+            z-index: 10;
+            padding: 0 20px;
+        }
 
-    p {
-    margin: 0;
-    font-size: 16px;
-    color: #333;
-    }
+        .step {
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 50vh;
+            padding: 25px;
+            width: 315px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
 
-    .step:first-child {
-    margin-top: 100vh; 
-    }
+        .step.active {
+            opacity: 1;
+        }
 
-    .step:last-child {
-    margin-bottom: 100vh; 
-    }
-  
-    /* Responsive adjustments */
-    @media only screen and (max-width: 768px) {
-      .scrolly-layout {
-        flex-direction: column; /* Stack containers on smaller screens */
-        height: auto;
-      }
-  
-      .image-container,
-      .map-container {
-        flex: 1;
-        width: 100%;
-        padding: 10px;
-      }
-  
-      .steps-container {
-        position: static; /* Place inline below other content */
-        background: transparent; /* Remove background in smaller screens */
-        padding: 10px;
-      }
-  
-      .step {
-        margin-bottom: 30px; /* Reduce spacing between steps */
-        font-size: 14px;
-        padding: 15px;
-      }
-    }
-  </style>
+        .step:first-child {
+            margin-top: 100vh;
+        }
 
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+        .step:last-child {
+            margin-bottom: 100vh;
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        p {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .mode-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .mode-walking {
+            background: #6ea5e4;
+            color: white;
+        }
+
+        .mode-bus {
+            background: #f7c96e;
+            color: white;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .scrolly-layout {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .map-container {
+                height: 50vh;
+            }
+
+            .steps-container {
+                position: relative;
+                width: 100%;
+                padding: 10px;
+            }
+
+            .step {
+                width: auto;
+                margin-bottom: 30px;
+            }
+
+            .step:first-child {
+                margin-top: 20px;
+            }
+
+            .step:last-child {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-    <section>
-        <div class="scrolly-layout">
-          <div class="map-container">
-            <video id="video-map" autoplay muted>
-              <source src="assets/map.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          </div>
-      
-          <div class="image-container">
-            <img id="dynamic-image" src="assets/image-1.jpg" alt="Dynamic Image">
-          </div>
-      
-          <div class="steps-container">
-            <div class="step" id="step1">
-                <p>Lorem ipsum odor amet, consectetuer adipiscing elit. Sem velit placerat adipiscing fermentum; euismod ligula luctus sem.</p>
+    <div class="scrolly-layout">
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="steps-container">
+                <div class="step" data-segment="1">
+                    <div class="mode-tag mode-bus">Bus</div>
+                    <h3>Downtown Transfer</h3>
+                    <p>A'Nya takes the #71 bus at 6:15 AM to downtown Baltimore.</p>
+                    <p><strong>Route:</strong> From home to downtown transfer point</p>
+                </div>
+    
+                <div class="step" data-segment="2">
+                    <div class="mode-tag mode-walking">Walk</div>
+                    <h3>Transfer Point</h3>
+                    <p>She gets off at Calvert and Redwood, then walks to the next bus stop at Charles Street.</p>
+                    <p><strong>Location:</strong> Near Planet Fitness on Charles Street</p>
+                </div>
+    
+                <div class="step" data-segment="3">
+                    <div class="mode-tag mode-bus">Bus</div>
+                    <h3>Final Bus Ride</h3>
+                    <p>From Charles Street, she takes either the Green or Silver line bus heading north.</p>
+                    <p><strong>Stop:</strong> Gets off at 35th Street and the Alameda</p>
+                </div>
+    
+                <div class="step" data-segment="4">
+                    <div class="mode-tag mode-walking">Walk</div>
+                    <h3>Arrival at School</h3>
+                    <p>She walks down 35th Street to reach the side entrance of MERVO High School.</p>
+                    <p><strong>Destination:</strong> Mergenthaler Vocational Technical High School</p>
+                </div>
             </div>
-            <div class="step" id="step2">
-                <p>Magna viverra hac libero nisl mauris placerat. Auctor aliquet integer sociosqu vehicula, tristique commodo.</p>
-            </div>
-            <div class="step" id="step3">
-                <p>Taciti tortor curae inceptos varius quisque eu ridiculus habitasse.</p>
-            </div>
-          </div>
         </div>
-      </section>
+    </div>
 
-  <script>
-    // Set up the steps and their corresponding actions
-    const steps = [
-      { id: "step1", timestamp: 0, image: "assets/image-1.jpg" },
-      { id: "step2", timestamp: 3, image: "assets/image-2.jpg" },
-      { id: "step3", timestamp: 5, image: "assets/image-3.jpg" }
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
+        center: [-76.619, 39.292],
+        zoom: 11,
+        maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]]
+    });
+
+    let currentSegment = 1;
+    let animationFrameId = null;
+
+    // Then add the markers
+    const points = [
+        {
+            coordinates: [-76.59105799325397, 39.33271447357723],
+            title: 'Mergenthaler High School'
+        }
     ];
 
-    // Select the video and image elements
-    const video = document.getElementById("video-map");
-    const dynamicImage = document.getElementById("dynamic-image");
+    // Add markers to the map
+    points.forEach(point => {
+        const marker = new mapboxgl.Marker()
+            .setLngLat(point.coordinates)
+            .setPopup(new mapboxgl.Popup().setHTML(`
+                <h3>${point.title}</h3>
+            `))
+            .addTo(map);
+    });
 
-    // Use IntersectionObserver to watch for step visibility
+    // Then initialize scrollytelling
+    const steps = document.querySelectorAll('.step');
+    
+    // Intersection Observer for scroll detection
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const stepId = entry.target.id;
-          const step = steps.find(s => s.id === stepId);
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const segment = parseInt(entry.target.dataset.segment);
+                const activeStep = document.querySelector('.step.active');
+                if (activeStep) {
+                    activeStep.classList.remove('active');
+                }
+                entry.target.classList.add('active');
+                animateSegment(segment);
+            }
+        });
+    }, {
+        threshold: 0.6
+    });
 
-          // Update the video timestamp and image
-          if (step) {
-            video.currentTime = step.timestamp;
-            video.pause(); // Pause the video at each step
-            dynamicImage.src = step.image; // Change the image
-          }
+    steps.forEach(step => observer.observe(step));
+
+    map.on('load', () => {
+        // Add vector source for static line
+        map.addSource('route', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.00kaja4r'
+        });
+        console.log('Vector source added');
+    
+        // Add static line layer
+        map.addLayer({
+            id: 'static-route',
+            type: 'line',
+            source: 'route',
+            'source-layer': 'anya_route-8pmuhg',  // Make sure this matches your tileset layer name
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            paint: {
+                'line-color': '#999',
+                'line-width': 3,
+                'line-opacity': 0.2
+            }
+        });
+    
+        // Add animated line source and layer
+        map.addSource('animated-route', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: []
+            }
+        });
+    
+        map.addLayer({
+            id: 'animated-route',
+            type: 'line',
+            source: 'animated-route',
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            paint: {
+                'line-color': [
+                    'match',
+                    ['get', 'mode'],
+                    'WALK', '#4A90E2',
+                    'BUS', '#f7c96e',
+                    '#ed6498'
+                ],
+                'line-width': 7,
+                'line-opacity': 1
+            }
+        });
+    
+        // Debug: Check source data loading
+        map.on('sourcedata', (e) => {
+            if (e.sourceId === 'route' && e.isSourceLoaded) {
+                console.log('Checking source features...');
+                const features = map.querySourceFeatures('route', {
+                    sourceLayer: 'anya_route-8pmuhg'
+                });
+                console.log('Available features:', features);
+            }
+        });
+    });
+    
+    function animateSegment(segment) {
+        console.log('Animating segment:', segment);
+
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
         }
-      });
-    }, { threshold: 0.6 }); // Trigger when 60% of a step is visible
+    
+        const features = map.querySourceFeatures('route', {
+            sourceLayer: 'anya_route-8pmuhg'
+        });
+    
+        console.log('Features for segment:', segment, features);
+    
+        const segmentFeatures = features
+            .filter(feature => feature.properties.segment <= segment)
+            .sort((a, b) => a.properties.segment - b.properties.segment);
+    
+        if (!segmentFeatures.length) {
+            console.log('No features found for segment:', segment);
+            return;
+        }
+    
+        // Create new features preserving mode property
+        const animatedFeatures = segmentFeatures.map(feature => ({
+            type: 'Feature',
+            properties: {
+                mode: feature.properties.mode,
+                segment: feature.properties.segment
+            },
+            geometry: feature.geometry
+        }));
+    
+        // Update the animated line
+        map.getSource('animated-route').setData({
+            type: 'FeatureCollection',
+            features: animatedFeatures
+        });
+    
+        // Calculate bounds
+        const coordinates = [];
+        animatedFeatures.forEach(feature => {
+            if (feature.geometry && feature.geometry.coordinates) {
+                coordinates.push(...feature.geometry.coordinates);
+            }
+        });
+    
+        if (coordinates.length > 0) {
+            const bounds = coordinates.reduce((bounds, coord) => {
+                return bounds.extend(coord);
+            }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    
+            map.fitBounds(bounds, {
+                padding: { top: 50, bottom: 50, left: 50, right: 350 },
+                duration: 1000
+            });
+        }
+    }
 
-    // Observe each step
-    document.querySelectorAll(".step").forEach(step => observer.observe(step));
-  </script>
+</script>
 
 </body>
-
 </html>
