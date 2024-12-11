@@ -24,19 +24,29 @@
             gap: 0;        /* Remove gap */
         }
 
-        .map-container {
+        /* .map-container {
             flex: 1;
             position: relative;
             height: 100vh;
             width: 50vw;
             display: flex;
             align-items: center;
+        } */
+
+        .map-container, .image-container {
+            height: 80vh;  /* Adjust this value to change both heights */
+            margin: auto 0; /* Centers vertically */
         }
 
         #map {
-            height: 57vh; /* Adjust this value to make map taller or shorter */
             width: 100%;
+            height: 100%; /* Takes full height of container */
         }
+
+        /* #map {
+            height: 57vh; 
+            width: 100%;
+        } */
 
         .steps-container {
             position: absolute;
@@ -107,7 +117,7 @@
         }
 
                 /* Add to your existing CSS */
-        .image-container {
+        /* .image-container {
             flex: 1;
             position: relative;
             height: 100vh;
@@ -115,7 +125,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
+        } */
 
         #dynamic-image {
             width: 100%;
@@ -207,9 +217,7 @@
         <div class="steps-container">
             <div class="step" id="step1" data-segment="1">
                 <div class="mode-tag mode-walking">Walk</div>
-                <h3>Downtown Transfer</h3>
-                <p>A'Nya takes the #71 bus at 6:15 AM to downtown Baltimore.</p>
-                <p><strong>Duration:</strong> # minutes</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
             </div>
             <div class="step" id="step2" data-segment="2">
                 <div class="mode-tag mode-bus">Bus</div>
