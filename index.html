@@ -11,31 +11,59 @@
             margin: 0; 
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: rgb(33, 32, 32);
         }
         
         .scrolly-layout {
             display: flex;
             flex-direction: row;
             height: 100vh;
-            width: 100vw;  /* Full viewport width */
+            width: 100vw;
             overflow: hidden;
-            margin: 0;     /* Remove margin */
-            padding: 0;    /* Remove padding */
-            gap: 0;        /* Remove gap */
+            margin: 0;
+            padding: 0;
+            gap: 0;
+        }
+
+        .graphics-container {
+            height: 100vh;
         }
 
         .map-container {
-            flex: 1;
+            height: 100%;
+            width: 30%;
             position: relative;
-            height: 100vh;
-            width: 50vw;
-            display: flex;
-            align-items: center;
+            border: 2px solid rgb(33, 32, 32);    /* White border */
+            border-radius: 5px;          /* Rounded corners */
+            overflow: hidden; 
         }
 
         #map {
-            height: 57vh; /* Adjust this value to make map taller or shorter */
+            height: 100%;
             width: 100%;
+        }
+
+        .image-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid  rgb(33, 32, 32);    /* White border */
+            border-radius: 5px;          /* Rounded corners */
+            overflow: hidden; 
+        }
+
+        #dynamic-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
 
         .steps-container {
@@ -71,355 +99,282 @@
             margin-bottom: 100vh;
         }
 
+        /* Hide scrollbar for Chrome, Safari and Opera */
         .steps-container::-webkit-scrollbar {
             display: none;
         }
 
-        h3 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .steps-container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
 
-        p {
-            margin: 0 0 8px 0;
-            font-size: 16px;
-            color: #333;
-            line-height: 1.4;
-        }
+/* Mobile styles for screens under 900px */
+@media screen and (max-width: 1200px) {
+    .scrolly-layout {
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+    }
 
-        .mode-tag {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
+    .graphics-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100%;
+    }
 
-        .mode-walking {
-            background: #6ea5e4;
-            color: white;
-        }
+    .map-container {
+        height: 50vh;  /* 50% of viewport height */
+        width: 100%;
+        flex: none;
+    }
 
-        .mode-bus {
-            background: #f7c96e;
-            color: white;
-        }
+    .image-container {
+        height: 50vh;  /* 50% of viewport height */
+        width: 100%;
+        flex: none;
+    }
+}
 
-                /* Add to your existing CSS */
-        .image-container {
-            flex: 1;
-            position: relative;
-            height: 100vh;
-            width: 50vw;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #dynamic-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;  /* This makes the image cover the entire container */
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        .image-steps-container {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 70%;
-            overflow-y: auto;
-            z-index: 10;
-            padding: 0 20px;
-        }
-
-        .image-step {
-            background: rgba(255, 255, 255, 0.9);
-            margin-bottom: 50vh;
-            padding: 25px;
-            width: 315px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            opacity: 0.3;
-            transition: opacity 0.3s;
-        }
-
-        .image-step.active {
-            opacity: 1;
-        }
-
-        .image-step:first-child {
-            margin-top: 100vh;
-        }
-
-        .image-step:last-child {
-            margin-bottom: 100vh;
-        }
-
-        @media only screen and (max-width: 768px) {
-            .scrolly-layout {
-                flex-direction: column;
-                height: auto;
-            }
-
-            .map-container {
-                height: 50vh;
-            }
-
-            .steps-container {
-                position: relative;
-                width: 100%;
-                padding: 10px;
-            }
-
-            .step {
-                width: auto;
-                margin-bottom: 30px;
-            }
-
-            .step:first-child {
-                margin-top: 20px;
-            }
-
-            .step:last-child {
-                margin-bottom: 20px;
-            }
-        }
+/* Additional adjustments for very small screens */
+@media screen and (max-width: 480px) {
+    .step {
+        padding: 15px;
+        width: calc(100% - 30px);
+    }
+}
+      
     </style>
 </head>
 <body>
   <section>
     <div class="scrolly-layout">
         
-        <div class="map-container">
-            <div id="map"></div>
-        </div>
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
 
-        <div class="image-container">
-            <img id="dynamic-image" src="assets/image-1.jpg" alt="Dynamic Image">
-        </div>
-
-        <div class="steps-container">
-            <div class="step" id="step1" data-segment="1">
-                <!-- <div class="mode-tag mode-walking">Walk</div>
-                <h3>Downtown Transfer</h3> -->
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duration: 23 minutes</p>
+            <div class="image-container">
+                <img id="dynamic-image" src="assets/image-1.jpg" alt="Dynamic Image">
             </div>
-            <div class="step" id="step2" data-segment="2">
-                <div class="mode-tag mode-bus">Bus</div>
-                <h3>Transfer Point</h3>
-                <p>She gets off at Calvert and Redwood, then walks to the next bus stop at Charles Street.</p>
-                <p><strong>Duration:</strong> 6 minutes</p>
+        
+            <div class="steps-container">
+                <div class="step" id="step1" data-segment="1">
+                    <!-- <div class="mode-tag mode-walking">Walk</div>
+                    <h3>Downtown Transfer</h3> -->
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div class="step" id="step2" data-segment="2">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div class="step" id="step3" data-segment="3">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div class="step" id="step4" data-segment="4">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+                <div class="step" id="step5" data-segment="5">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
             </div>
-            <div class="step" id="step3" data-segment="3">
-                <div class="mode-tag mode-bus">Bus</div>
-                <h3>Final Bus Ride</h3>
-                <p>From Charles Street, she takes either the Green or Silver line bus heading north.</p>
-                <p><strong>Duration:</strong> 20 minutes</p>
-            </div>
-            <div class="step" id="step4" data-segment="4">
-                <div class="mode-tag mode-walking">Walk</div>
-                <h3>Arrival at School</h3>
-                <p>She walks down 35th Street to reach MERVO High School.</p>
-                <p><strong>Duration:</strong> 13 minutes</p>
-            </div>
-        </div>
+        
     </div>
 </section>
 
-    
 <script>
-
+    // Define steps array with image mappings
 const steps = [
-        { id: "step1", segment: 1, image: "assets/image-1.jpg" },
-        { id: "step2", segment: 2, image: "assets/image-2.jpg" },
-        { id: "step3", segment: 3, image: "assets/image-3.jpg" },
-        { id: "step4", segment: 4, image: "assets/image-1.jpg" }
-    ];
+    { id: "step1", segment: 1, image: "assets/image-1.jpg" },
+    { id: "step2", segment: 2, image: "assets/image-2.jpg" },
+    { id: "step3", segment: 3, image: "assets/image-3.jpg" },
+    { id: "step4", segment: 4, image: "assets/image-1.jpg" },
+    { id: "step4", segment: 5, image: "assets/image-2.jpg" }
+];
 
-
+// Initialize map with fixed viewport
 mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
-        center: [-76.619, 39.292],
-        zoom: 11,
-        maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]]
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+    center: [-76.619, 39.292],
+    zoom: 11.4,
+    maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
+    // Add these options to disable user interaction:
+    dragPan: false,      // Disable panning
+    dragRotate: false,   // Disable rotation
+    scrollZoom: false,   // Disable scroll zoom
+    touchZoom: false,    // Disable touch zoom
+    doubleClickZoom: false, // Disable double click zoom
+    keyboard: false      // Disable keyboard controls
+});
+
+// Global variables
+let currentSegment = 1;
+let animationFrameId = null;
+const dynamicImage = document.getElementById("dynamic-image");
+
+// Progressive animation function
+function animateSegmentProgressive(segment) {
+    console.log('Animating segment progressively:', segment);
+
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    const features = map.querySourceFeatures('route', {
+        sourceLayer: 'anya_route-8pmuhg'
     });
 
-    let currentSegment = 1;
-    let animationFrameId = null;
-    const dynamicImage = document.getElementById("dynamic-image");
+    const segmentFeatures = features
+        .filter(feature => feature.properties.segment <= segment)
+        .sort((a, b) => a.properties.segment - b.properties.segment);
 
-    // Add marker
-    new mapboxgl.Marker()
-        .setLngLat([-76.59105799325397, 39.33271447357723])
-        .setPopup(new mapboxgl.Popup().setHTML('<h3>Mergenthaler High School</h3>'))
-        .addTo(map);
+    if (!segmentFeatures.length) {
+        console.log('No features found for segment:', segment);
+        return;
+    }
 
-    // Combined observer for both map and images
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const stepId = entry.target.id;
-                const step = steps.find(s => s.id === stepId);
-                const segment = parseInt(entry.target.dataset.segment);
+    let progress = 0;
+    const steps = 100; // Number of steps for the animation
 
-                // Update active state
-                const activeStep = document.querySelector('.step.active');
-                if (activeStep) {
-                    activeStep.classList.remove('active');
-                }
-                entry.target.classList.add('active');
+    function animate() {
+        progress += 1;
+        const currentProgress = progress / steps;
 
-                // Update map
-                if (segment) {
-                    animateSegment(segment);
-                }
-
-                // Update image
-                if (step) {
-                    dynamicImage.src = step.image;
-                }
+        const animatedFeatures = segmentFeatures.map((feature, index) => {
+            if (index < segment - 1) {
+                // Show previous segments completely
+                return feature;
+            } else if (index === segment - 1) {
+                // Animate current segment
+                const coordinates = feature.geometry.coordinates;
+                const animatedCoordinates = coordinates.slice(0, Math.floor(coordinates.length * currentProgress));
+                
+                return {
+                    type: 'Feature',
+                    properties: feature.properties,
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: animatedCoordinates
+                    }
+                };
             }
-        });
-    }, { threshold: 0.6 });
+            return null;
+        }).filter(f => f !== null);
 
-    // Observe steps
-    document.querySelectorAll(".step").forEach(step => observer.observe(step));
-
-
-    map.on('load', () => {
-        // Add vector source for static line
-        map.addSource('route', {
-            type: 'vector',
-            url: 'mapbox://ryanlittle.00kaja4r'
-        });
-        console.log('Vector source added');
-    
-        // Add static line layer
-        map.addLayer({
-            id: 'static-route',
-            type: 'line',
-            source: 'route',
-            'source-layer': 'anya_route-8pmuhg',  // Make sure this matches your tileset layer name
-            layout: {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            paint: {
-                'line-color': '#999',
-                'line-width': 3,
-                'line-opacity': 0.2
-            }
-        });
-    
-        // Add animated line source and layer
-        map.addSource('animated-route', {
-            type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: []
-            }
-        });
-    
-        map.addLayer({
-            id: 'animated-route',
-            type: 'line',
-            source: 'animated-route',
-            layout: {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            paint: {
-                'line-color': [
-                    'match',
-                    ['get', 'mode'],
-                    'WALK', '#4A90E2',
-                    'BUS', '#f7c96e',
-                    '#ed6498'
-                ],
-                'line-width': 7,
-                'line-opacity': 1
-            }
-        });
-    
-        // Debug: Check source data loading
-        map.on('sourcedata', (e) => {
-            if (e.sourceId === 'route' && e.isSourceLoaded) {
-                console.log('Checking source features...');
-                const features = map.querySourceFeatures('route', {
-                    sourceLayer: 'anya_route-8pmuhg'
-                });
-                console.log('Available features:', features);
-            }
-        });
-    });
-    
-    function animateSegment(segment) {
-        console.log('Animating segment:', segment);
-
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-        }
-    
-        const features = map.querySourceFeatures('route', {
-            sourceLayer: 'anya_route-8pmuhg'
-        });
-    
-        console.log('Features for segment:', segment, features);
-    
-        const segmentFeatures = features
-            .filter(feature => feature.properties.segment <= segment)
-            .sort((a, b) => a.properties.segment - b.properties.segment);
-    
-        if (!segmentFeatures.length) {
-            console.log('No features found for segment:', segment);
-            return;
-        }
-    
-        // Create new features preserving mode property
-        const animatedFeatures = segmentFeatures.map(feature => ({
-            type: 'Feature',
-            properties: {
-                mode: feature.properties.mode,
-                segment: feature.properties.segment
-            },
-            geometry: feature.geometry
-        }));
-    
-        // Update the animated line
         map.getSource('animated-route').setData({
             type: 'FeatureCollection',
             features: animatedFeatures
         });
-    
-        // Calculate bounds
-        const coordinates = [];
-        animatedFeatures.forEach(feature => {
-            if (feature.geometry && feature.geometry.coordinates) {
-                coordinates.push(...feature.geometry.coordinates);
-            }
-        });
-    
-        if (coordinates.length > 0) {
-            const bounds = coordinates.reduce((bounds, coord) => {
-                return bounds.extend(coord);
-            }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
-    
-            map.fitBounds(bounds, {
-                padding: { top: 50, bottom: 50, left: 50, right: 350 },
-                duration: 1000
-            });
+
+        if (progress < steps) {
+            animationFrameId = requestAnimationFrame(animate);
         }
     }
 
-</script>
+    animate();
+}
+
+// Initialize map layers
+map.on('load', () => {
+    // Add vector source for static line
+    map.addSource('route', {
+        type: 'vector',
+        url: 'mapbox://ryanlittle.00kaja4r'
+    });
+
+    // Add static line layer
+    map.addLayer({
+        id: 'static-route',
+        type: 'line',
+        source: 'route',
+        'source-layer': 'anya_route-8pmuhg',
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+        },
+        paint: {
+            'line-color': '#999',
+            'line-width': 2,
+            'line-opacity': 0.2
+        }
+    });
+
+    // Add animated line source and layer
+    map.addSource('animated-route', {
+        type: 'geojson',
+        data: {
+            type: 'FeatureCollection',
+            features: []
+        }
+    });
+
+    map.addLayer({
+        id: 'animated-route',
+        type: 'line',
+        source: 'animated-route',
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+        },
+        paint: {
+            'line-color': [
+                'match',
+                ['get', 'mode'],
+                'BUS', '#bfdc18',
+                'WALK', '#f26969',
+                '#ed6498'
+            ],
+            'line-width': 3,
+            'line-opacity': 0.8
+        }
+    });
+
+    // Debug: Check source data loading
+    map.on('sourcedata', (e) => {
+        if (e.sourceId === 'route' && e.isSourceLoaded) {
+            console.log('Checking source features...');
+            const features = map.querySourceFeatures('route', {
+                sourceLayer: 'anya_route-8pmuhg'
+            });
+            console.log('Available features:', features);
+        }
+    });
+});
+
+// Initialize Intersection Observer
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const stepId = entry.target.id;
+            const step = steps.find(s => s.id === stepId);
+            const segment = parseInt(entry.target.dataset.segment);
+
+            // Update active state
+            const activeStep = document.querySelector('.step.active');
+            if (activeStep) {
+                activeStep.classList.remove('active');
+            }
+            entry.target.classList.add('active');
+
+            // Update map with progressive animation
+            if (segment) {
+                animateSegmentProgressive(segment);
+            }
+
+            // Update image
+            if (step) {
+                dynamicImage.src = step.image;
+            }
+        }
+    });
+}, { threshold: 0.6 });
+
+// Observe all steps
+document.querySelectorAll(".step").forEach(step => observer.observe(step));
+</script>    
 
 </body>
 </html>
