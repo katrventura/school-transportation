@@ -332,6 +332,35 @@ map.on('load', () => {
         }
     });
 
+    map.addSource('polytechnic', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.5sk5uh5i'
+        });
+
+        // Add fill layer for the geometry
+        map.addLayer({
+            'id': 'polytechnic-fill',
+            'type': 'fill',
+            'source': 'polytechnic',
+            'source-layer': 'mervo-3pmloo',
+            'paint': {
+                'fill-color': '#ffffff',
+                'fill-opacity': 0.5
+            }
+        });
+
+        // Optional: Add outline for the geometry
+        map.addLayer({
+            'id': 'polytechnic-outline',
+            'type': 'line',
+            'source': 'polytechnic',
+            'source-layer': 'mervo-3pmloo',
+            'paint': {
+                'line-color': '#ffffff',
+                'line-width': 1
+            }
+        });
+
     // Debug: Check source data loading
     map.on('sourcedata', (e) => {
         if (e.sourceId === 'route' && e.isSourceLoaded) {
