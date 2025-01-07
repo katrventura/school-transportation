@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>School Transportation Route</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <style>
+        #embed{
+    body { 
+    margin: 0; 
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: rgb(33, 32, 32);
+}
+
+    .map-container {
+        flex: 1;
+        position: relative;
+        height: 100vh;
+        border: 2px solid rgb(33, 32, 32);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    #brooke-map, #anya-map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Media query for screens smaller than 900px */
+    @media screen and (max-width: 900px) {
+        #embed {
+            flex-direction: column;
+            height: auto;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .map-container {
+            height: 50vh;
+            width: 100%;
+        }
+    }
+
+    /* Additional adjustments for very small screens */
+    @media screen and (max-width: 480px) {
+        #embed {
+            padding: 5px;
+            gap: 5px;
+        }
+
+        .map-container {
+            height: 45vh;
+        }
+    }
+
+}
+    </style>
+</head>
+<body>
+    <div id="embed">
+        <div class="map-container">
+            <div id="brooke-map"></div>  
+        </div>
+        <div class="map-container">
+            <div id="anya-map"></div>  
+        </div>
+    </div>
+
+<!-- anya -->
+<!-- <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+    const anyaMap = new mapboxgl.Map({
+        container: 'anya-map',
+        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        center: [-76.619, 39.300],
+        zoom: 11.5,
+        maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
+        dragPan: false,
+        dragRotate: false,
+        scrollZoom: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        keyboard: false
+    });
+
+    anyaMap.on('load', () => {
+        anyaMap.addSource('anya-route', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.00kaja4r'
+        });
+    
+        anyaMap.addLayer({
+            id: 'anya-static-route',
+            type: 'line',
+            source: 'anya-route',
+            'source-layer': 'anya_route-8pmuhg',
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            paint: {
+                'line-color': '#bfdc18',
+                'line-width': 3,
+                'line-opacity': 1
+            }
+        });
+
+        anyaMap.addSource('anya-mervo', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.5sk5uh5i'
+        });
+
+        anyaMap.addLayer({
+            'id': 'anya-mervo-fill',
+            'type': 'fill',
+            'source': 'anya-mervo',
+            'source-layer': 'mervo-3pmloo',
+            'paint': {
+                'fill-color': '#ffffff',
+                'fill-opacity': 0.5
+            }
+        });
+
+        anyaMap.addLayer({
+            'id': 'anya-mervo-outline',
+            'type': 'line',
+            'source': 'anya-mervo',
+            'source-layer': 'mervo-3pmloo',
+            'paint': {
+                'line-color': '#ffffff',
+                'line-width': 1
+            }
+        });
+    });
+});
+    
+
+</script> -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+    const anyaMap = new mapboxgl.Map({
+        container: 'anya-map',
+        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        center: [-76.619, 39.300],
+        zoom: 11.4,
+        maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
+        dragPan: false,
+        dragRotate: false,
+        scrollZoom: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        keyboard: false
+    });
+
+    let animationFrameId = null;
+    let routeCoordinates = null;
+
+    function animateRoute() {
+        if (!routeCoordinates) return;
+        
+        let progress = 0;
+        const steps = 200;
+
+        function animate() {
+            progress += 1;
+            const currentProgress = progress / steps;
+            
+            const animatedCoordinates = routeCoordinates.slice(0, 
+                Math.floor(routeCoordinates.length * currentProgress)
+            );
+
+            map.getSource('animated-route').setData({
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                    type: 'LineString',
+                    coordinates: animatedCoordinates
+                }
+            });
+
+            if (progress >= steps) {
+                // Reset animation with fade out
+                map.setPaintProperty('animated-route', 'line-opacity', 0);
+                setTimeout(() => {
+                    progress = 0;
+                    map.setPaintProperty('animated-route', 'line-opacity', 0.8);
+                    requestAnimationFrame(animate);
+                }, 1000);
+            } else {
+                animationFrameId = requestAnimationFrame(animate);
+            }
+        }
+
+        animate();
+    }
+
+    anyaMap.on('load', () => {
+        anyaMap.addSource('anya-route', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.00kaja4r'
+        });
+
+        anyaMap.addSource('animated-route', {
+            type: 'geojson',
+            data: {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                    type: 'LineString',
+                    coordinates: []
+                }
+            }
+        });
+
+        anyaMap.addLayer({
+            id: 'animated-route',
+            type: 'line',
+            source: 'animated-route',
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            paint: {
+                'line-color': '#bfdc18',
+                'line-width': 3,
+                'line-opacity': 0.8
+            }
+        });
+
+        anyaMap.addSource('mervo', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.5sk5uh5i'
+        });
+
+        anyaMap.addLayer({
+            'id': 'mervo-fill',
+            'type': 'fill',
+            'source': 'mervo',
+            'source-layer': 'mervo-3pmloo',
+            'paint': {
+                'fill-color': '#ffffff',
+                'fill-opacity': 0.5
+            }
+        });
+
+        anyaMap.addLayer({
+            'id': 'mervo-outline',
+            'type': 'line',
+            'source': 'mervo',
+            'source-layer': 'mervo-3pmloo',
+            'paint': {
+                'line-color': '#ffffff',
+                'line-width': 1
+            }
+        });
+
+         // Wait for source to load and get coordinates
+         map.on('sourcedata', (e) => {
+            if (e.sourceId === 'route' && e.isSourceLoaded && !routeCoordinates) {
+                const features = map.querySourceFeatures('route', {
+                    sourceLayer: 'anya_route-8pmuhg'
+                });
+                
+                if (features.length > 0) {
+                    routeCoordinates = features[0].geometry.coordinates;
+                    console.log('Route coordinates loaded:', routeCoordinates);
+                    animateRoute();
+                }
+            }
+        });
+    });
+});
+</script>
+<!-- brooke -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+    const brookeMap = new mapboxgl.Map({
+        container: 'brooke-map',
+        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        center: [-76.619, 39.320],
+        zoom: 11.5,
+        maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
+        dragPan: false,
+        dragRotate: false,
+        scrollZoom: false,
+        touchZoom: false,
+        doubleClickZoom: false,
+        keyboard: false
+    });
+
+    brookeMap.on('load', () => {
+        brookeMap.addSource('brooke-route', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.9h6zstxc'
+        });
+    
+        brookeMap.addLayer({
+            id: 'brooke-static-route',
+            type: 'line',
+            source: 'brooke-route',
+            'source-layer': 'brooke_route_io-0lkqhf',
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round'
+            },
+            paint: {
+                'line-color': '#bfdc18',
+                'line-width': 3,
+                'line-opacity': 1
+            }
+        });
+
+        brookeMap.addSource('brooke-poly', {
+            type: 'vector',
+            url: 'mapbox://ryanlittle.61dk63ws'
+        });
+
+        brookeMap.addLayer({
+            'id': 'brooke-poly-fill',
+            'type': 'fill',
+            'source': 'brooke-poly',
+            'source-layer': 'baltimore_polytechnic-79ucoa',
+            'paint': {
+                'fill-color': '#ffffff',
+                'fill-opacity': 0.5
+            }
+        });
+
+        brookeMap.addLayer({
+            'id': 'brooke-poly-outline',
+            'type': 'line',
+            'source': 'brooke-poly',
+            'source-layer': 'baltimore_polytechnic-79ucoa',
+            'paint': {
+                'line-color': '#ffffff',
+                'line-width': 1
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
