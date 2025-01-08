@@ -1,4 +1,4 @@
-≈<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -207,33 +207,21 @@
         
             <div class="steps-container">
                 <div class="step" id="step0">
-                    <!-- <div class="mode-tag mode-walking">Walk</div>
-                    <h3>Downtown Transfer</h3> -->
-                    <p>A’Nya, 17, is out the door at 6:08 a.m. to be at the bus stop by 6:13 a.m.</p>
-                    
+                    <p>A’Nya, 17, is out the door at 6:08 a.m. to be at the bus stop by 6:13 a.m.</p> 
                 </div>
                 <div class="step" id="step1">
-                    <!-- <div class="mode-tag mode-walking">Walk</div>
-                    <h3>Downtown Transfer</h3> -->
-                    
                     <p>If she is lucky the trip from her Cherry Hill neighborhood to Mergenthaler Vocational-Technical High School in Northeast Baltimore will take her slightly over an hour, the final bus dropping her at 35th Street and the Alameda at 7:20 a.m. with enough time to walk a few blocks and get through the metal detectors at the door before the first bell at 7:45 a.m.
                     </p>
                 </div>
                 <div class="step" id="step2" data-segment="1">
                     <div class="mode-tag mode-bus">Bus 40 mins</div>
-                    <!-- <h3>Transfer Point</h3> -->
                     <p>Catching the first of two buses can be difficult. The stop is late TK, according to a Banner analysis.</p>
                 </div>
                 <div class="step" id="step3" data-segment="2">
-                    <!-- <div class="mode-tag mode-bus">Bus</div>
-                    <h3>Final Bus Ride</h3> -->
                     <p>Long before the sun has risen, she arrives at her first stop downtown, where she tries to grab breakfast at a Dunkin Donuts before walking a couple of blocks to the next stop to catch the silver or the green line bus, whichever comes first. The connection is erratic. Sometimes two buses appear at once. Other times, she waits a half hour.</p>
                 </div>
                 <div class="step" id="step4" data-segment="3">
-                    <!-- <div class="mode-tag mode-walking">Walk</div>
-                    <h3>Arrival at School</h3> -->
                     <p>She has to catch one of these buses by TK a.m., or she will be late to first period. Both buses are late TK in TK times. One day, it was TK minutes late. </p>
-                    <!-- <p><strong>Duration:</strong> # minutes</p> -->
                 </div>
                 <div class="step" id="step5" data-segment="4">
                     <!-- <div class="mode-tag mode-walking">Walk</div>
@@ -262,8 +250,6 @@ const steps = [
 mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
     const map = new mapboxgl.Map({
         container: 'map',
-        // style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
-
         style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
         center: [-76.619, 39.292],
         zoom: 11,
@@ -273,12 +259,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wc
     let currentSegment = 1;
     let animationFrameId = null;
     const dynamicImage = document.getElementById("dynamic-image");
-
-    // Add marker
-    // new mapboxgl.Marker()
-    //     .setLngLat([-76.59105799325397, 39.33271447357723])
-    //     .setPopup(new mapboxgl.Popup().setHTML('<h3>Mergenthaler High School</h3>'))
-    //     .addTo(map);
 
     // Combined observer for both map and images
     const observer = new IntersectionObserver((entries) => {
