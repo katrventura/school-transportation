@@ -119,7 +119,7 @@
 
             <div class="step" id="step5" data-segment="5">
                 <img src="assets/image-1.jpg" alt="Step 5">
-                <p>TK TK</p>
+                <p>End.</p>
         </div>
     </div>
 
@@ -288,6 +288,54 @@
                     'text-halo-width': 2
                 }
             });
+
+            // Add Cherry line and label
+            // map.addLayer({
+            //     'id': 'cherry-line',
+            //     'type': 'line',
+            //     'source': 'cherry-source',
+            //     'source-layer': 'cherry-route-33ghrw',
+            //     'paint': {
+            //         'line-color': '#f44343',
+            //         'line-width': 4,
+            //         'line-opacity': 0
+            //     },
+            //     'layout': {
+            //         'line-join': 'round',
+            //         'line-cap': 'round'
+            //     }
+            // });
+
+            // map.addLayer({
+            //     'id': 'cherry-label',
+            //     'type': 'symbol',
+            //     'source': 'cherry-source',
+            //     'source-layer': 'cherry-route-33ghrw',
+            //     'minzoom': 10,
+            //     'maxzoom': 22,
+            //     'layout': {
+            //         'text-field': 'Cherry route',
+            //         'text-size': [
+            //             'interpolate',
+            //             ['linear'],
+            //             ['zoom'],
+            //             10, 12,
+            //             12, 14,
+            //             14, 16
+            //         ],
+            //         'symbol-placement': 'line-center',
+            //         'text-offset': [0, -1],
+            //         'text-allow-overlap': false,
+            //         'text-ignore-placement': false,
+            //         'text-font': ['Open Sans Bold'],
+            //         'text-letter-spacing': 0.1
+            //     },
+            //     'paint': {
+            //         'text-color': '#f44343',
+            //         'text-halo-color': '#ffffff',
+            //         'text-halo-width': 2
+            //     }
+            // });
 
             // Add Citygreen line and label
             map.addLayer({

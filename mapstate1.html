@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .scrolly-layout {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .map-container {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 50%;
+            height: 100vh;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .content-container {
+            width: 50%;
+            margin-left: 50%;
+            padding: 2rem;
+        }
+
+        .step {
+            margin-bottom: 4rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 80vh;
+        }
+
+        .step img {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+            object-fit: cover;
+            display: block;
+        }
+
+        .step p {
+            padding: 1.5rem 0;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .scrolly-layout {
+                flex-direction: column;
+            }
+
+            .map-container {
+                position: relative;
+                width: 100%;
+                height: 50vh;
+            }
+
+            .content-container {
+                width: 100%;
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="map-container">
+    <div id="map"></div>
+</div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/ryanlittle/cm5v09wt800fb01s3fdau52ms',
+    center: [-76.619, 39.290],
+    zoom: 12.5,
+    maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]]
+});
+
+map.on('load', () => {
+    // Add sources
+    map.addSource('citysilver-source', {
+        'type': 'vector',
+        'url': 'mapbox://ryanlittle.1oxv0yzw'
+    });
+
+    map.addSource('cherry-source', {
+        'type': 'vector',
+        'url': 'mapbox://ryanlittle.5ogx2mg0'
+    });
+
+    map.addSource('bus71-source', {
+        'type': 'vector',
+        'url': 'mapbox://ryanlittle.dx4aug3f'
+    });
+
+    map.addLayer({
+        'id': 'bus71-line',
+        'type': 'line',
+        'source': 'bus71-source',
+        'source-layer': 'bus-71-53x4pr',
+        'paint': {
+            'line-color': '#1E90FF',
+            'line-width': 4,
+            'line-opacity': 0
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        }
+    });
+
+    map.addLayer({
+        'id': 'bus71-label',
+        'type': 'symbol',
+        'source': 'bus71-source',
+        'source-layer': 'bus-71-53x4pr',
+        'minzoom': 10,
+        'maxzoom': 22,
+        'layout': {
+            'text-field': 'Bus 71 route',
+            'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                10, 12,
+                12, 14,
+                14, 16
+            ],
+            'symbol-placement': 'line-center',
+            'text-offset': [0, -1],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-font': ['Open Sans Bold'],
+            'text-letter-spacing': 0.1
+        },
+        'paint': {
+            'text-color': '#8f25f8',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+        }
+    });
+
+    // Add Citysilver line and label
+    map.addLayer({
+        'id': 'citysilver-line',
+        'type': 'line',
+        'source': 'citysilver-source',
+        'source-layer': 'citysilver-bdl6gr',
+        'paint': {
+            'line-color': '#C0C0C0',
+            'line-width': 4,
+            'line-opacity': 0
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        }
+    });
+
+    map.addLayer({
+        'id': 'citysilver-label',
+        'type': 'symbol',
+        'source': 'citysilver-source',
+        'source-layer': 'citysilver-bdl6gr',
+        'minzoom': 10,
+        'maxzoom': 22,
+        'layout': {
+            'text-field': 'Citysilver bus line',
+            'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                10, 12,
+                12, 14,
+                14, 16
+            ],
+            'symbol-placement': 'line-center',
+            'text-offset': [0, -1],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-font': ['Open Sans Bold'],
+            'text-letter-spacing': 0.1
+        },
+        'paint': {
+            'text-color': '#C0C0C0',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+        }
+    });
+
+    // Add Cherry line and label
+    map.addLayer({
+        'id': 'cherry-line',
+        'type': 'line',
+        'source': 'cherry-source',
+        'source-layer': 'cherry-route-33ghrw',
+        'paint': {
+            'line-color': '#FF0000',
+            'line-width': 4,
+            'line-opacity': 0
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        }
+    });
+
+    map.addLayer({
+        'id': 'cherry-label',
+        'type': 'symbol',
+        'source': 'cherry-source',
+        'source-layer': 'cherry-route-33ghrw',
+        'minzoom': 10,
+        'maxzoom': 22,
+        'layout': {
+            'text-field': 'Cherry route',
+            'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                10, 12,
+                12, 14,
+                14, 16
+            ],
+            'symbol-placement': 'line-center',
+            'text-offset': [0, -1],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-font': ['Open Sans Bold'],
+            'text-letter-spacing': 0.1
+        },
+        'paint': {
+            'text-color': '#FF0000',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+        }
+    });
+// Create custom HTML element for the marker
+const markerElement = document.createElement('div');
+    markerElement.className = 'custom-marker';
+    markerElement.style.cssText = `
+        background: white;
+        border-radius: 4px;
+        padding: 4px 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.8;
+    `;
+
+    // Add bus icon and time
+    markerElement.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="min-width: 16px;">
+        <path d="M4 16c0 1.1.9 2 2 2h1v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h6v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h1c1.1 0 2-.9 2-2V6c0-3-3-3-3-3H7S4 3 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="currentColor"/>
+    </svg>
+        tk min
+    `;
+
+    // Add the custom marker at the specified coordinates
+    const marker = new mapboxgl.Marker({
+        element: markerElement,
+        anchor: 'left',
+        opacity: 0.8
+    })
+    .setLngLat([-76.6062671262529, 39.27583784919608])
+    .addTo(map);
+
+    console.log('Marker added to map at specific coordinates');
+
+
+    // Create second marker
+const secondmarkerElement = document.createElement('div');
+    secondmarkerElement.className = 'custom-marker';
+    secondmarkerElement.style.cssText = `
+        background: white;
+        border-radius: 4px;
+        padding: 4px 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.8;
+    `;
+
+    // Add bus icon and time
+    secondmarkerElement.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="min-width: 16px;">
+        <path d="M4 16c0 1.1.9 2 2 2h1v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h6v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h1c1.1 0 2-.9 2-2V6c0-3-3-3-3-3H7S4 3 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="currentColor"/>
+    </svg>
+        tk min
+    `;
+
+    // Add the custom marker at the specified coordinates
+    const secondMarker = new mapboxgl.Marker({
+        element: secondmarkerElement,
+        anchor: 'left',
+        opacity: 0.8
+    })
+    .setLngLat([-76.60711509396111, 39.31155909381104])
+    .addTo(map);
+
+    console.log('Second marker added to map at specific coordinates');
+
+
+     // Create second marker
+const thirdmarkerElement = document.createElement('div');
+    thirdmarkerElement.className = 'custom-marker';
+    thirdmarkerElement.style.cssText = `
+        background: white;
+        border-radius: 4px;
+        padding: 4px 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.8;
+    `;
+
+    // Add bus icon and time
+    thirdmarkerElement.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="min-width: 16px;">
+    <path d="M13.5 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm2 2h-4c-.9 0-1.68.6-1.92 1.45L8.7 11H6.5c-.28 0-.5.22-.5.5v2c0 .28.22.5.5.5h3l1.5-2.5L12 15l-2.5 7h2l2.5-7 1 2.5v4.5c0 .55.45 1 1 1s1-.45 1-1v-5c0-.25-.1-.5-.25-.67l-2-2.67L16 11V8c0-.55-.45-1-1-1z" fill="currentColor"/>
+</svg>
+        tk min
+    `;
+
+    // Add the custom marker at the specified coordinates
+    const thirdMarker = new mapboxgl.Marker({
+        element: thirdmarkerElement,
+        anchor: 'left',
+        opacity: 0.8
+    })
+    .setLngLat([-76.58892018519846, 39.33282277274563])
+    .addTo(map);
+
+    console.log('Third marker added to map at specific coordinates');
+});
+
+</script>
+
+<script>
+    // second mapstate
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+const mapstate2 = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/ryanlittle/cm5v09wt800fb01s3fdau52ms',
+    center: [-76.61499, 39.26467],
+    zoom: 13.42,
+    maxBounds: [
+    [-76.67059, 39.23994], 
+    [-76.55940, 39.28939]
+]
+});
+</script>
+
+<script>
+    // third mapstate
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+const mapstate3 = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/ryanlittle/cm5v09wt800fb01s3fdau52ms',
+    center: [-76.61348, 39.29769],
+    zoom: 15.0,
+    maxBounds: [
+    [-76.62831, 39.28109], 
+    [-76.59864, 39.30228]
+]
+});
+    
+</script>
+
+<script>
+    // fourth mapstate
+    mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+const mapstate4 = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/ryanlittle/cm5v09wt800fb01s3fdau52ms',
+    center: [-76.60567, 39.30824],
+    zoom: 12.30,
+    maxBounds: [
+    [-76.66251, 39.28297], 
+    [-76.54882, 39.33350]
+]
+});
+
+</script>
+
+</body>
+</html>
