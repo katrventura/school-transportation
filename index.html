@@ -89,67 +89,60 @@
         }
 
         @media (max-width: 768px) {
-            .scrolly-layout {
-                flex-direction: column;
-                height: auto;
-                overflow: visible;
-                padding: 1rem;  /* Add overall padding */
-            }
+            @media (max-width: 768px) {
+    .scrolly-layout {
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+        padding: 0;  /* Remove padding */
+        position: relative; /* Change from absolute */
+        width: 100%;
+    }
 
-            .map-container {
-                position: sticky;
-                top: 0;
-                width: 100%;  /* Will fit within the padded scrolly-layout */
-                height: 40vh;
-                z-index: 1000;
-                overflow: hidden;
-                background: white;
-            }
+    .map-container {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 40vh;
+        z-index: 1000;
+        overflow: hidden;
+        background: white;
+    }
 
-            .content-container {
-                width: 100%;
-                margin: 0;
-                padding-top: 0 1rem; /* Space between map and content */
-                height: auto;
-                flex: none;
-                overflow-x: hidden;
+    .content-container {
+        width: 100%;
+        margin: 0;
+        padding: 0 1rem; /* Horizontal padding for content */
+        height: auto;
+        flex: none;
+        overflow-x: hidden;
+    }
 
-            }
+    .step {
+        margin: 0;
+        padding: 0;
+        width: 100%; /* Change from 100vw to 100% */
+        min-height: auto;
+        max-width: 100%;
+    }
 
-            #map {
-                width: 100%;
-                height: 100%;
-            }
+    .step img {
+        width: 100%; /* Change from 100vw to 100% */
+        max-height: 40vh;
+        object-fit: cover;
+        margin: 1rem 0; /* Combine margins */
+        padding: 0;
+        display: block;
+    }
 
-            
-            .step {
-                margin: 0;
-                padding: 0;
-                width: 100vw;
-                min-height: auto;
-                max-width: 100%;
-            }
-
-            .step img {
-                width: 100vw;
-                max-height: 40vh;
-                object-fit: cover;
-                margin: 0;
-                padding: 0;
-                display: block;
-                margin-bottom: 1rem;
-                margin-top: 1rem;
-            }
-
-            .step p {
-                /* padding: 1rem; */
-                font-size: 1.2rem;
-                line-height: 1.6;
-            }
-
-            .step.active {
-                opacity: 1;
-            }
+    .step p {
+        padding: 1rem;
+        font-size: 1.2rem;
+        line-height: 1.6;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+}
         } 
     </style>
 </head><body>
