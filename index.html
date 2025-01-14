@@ -88,21 +88,25 @@
                 flex-direction: column;
                 height: auto;
                 overflow: visible;
+                padding: 1rem;  /* Add overall padding */
             }
 
             .map-container {
                 position: sticky;
-                left: 0;
                 top: 0;
-                width: 100vw;
-                height: 50vh;
+                width: 100%;  /* Will fit within the padded scrolly-layout */
+                height: 40vh;
                 z-index: 1000;
+                overflow: hidden;
+                background: white;
             }
 
             .content-container {
-                width: 100vw;
+                width: 100%;
                 margin: 0;
-                padding: 0;  /* Remove padding here */
+                padding-top: 1rem; /* Space between map and content */
+                height: auto;
+                flex: none;
                 overflow-x: hidden;
             }
 
