@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Map Iframe</title>
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Responsive iframe wrapper */
+      .iframe-wrapper {
+        position: relative;
+        width: 100%; /* Full width */
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio (56.25% = 9/16 * 100) */
+        height: 0;
+        overflow: hidden;
+      }
+
+      .iframe-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none; /* No border for the iframe */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="iframe-wrapper">
+        <iframe 
+        src="https://katrventura.github.io/school-transportation/" 
+        frameborder="0" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </body>
+</html>

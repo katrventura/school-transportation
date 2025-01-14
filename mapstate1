@@ -1,0 +1,242 @@
+mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/ryanlittle/cm5v09wt800fb01s3fdau52ms',
+    center: [-76.619, 39.290],
+    zoom: 12.5,
+    maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]]
+});
+
+map.on('load', () => {
+    // Add sources
+    map.addSource('citysilver-source', {
+        'type': 'vector',
+        'url': 'mapbox://ryanlittle.1oxv0yzw'
+    });
+
+    map.addSource('cherry-source', {
+        'type': 'vector',
+        'url': 'mapbox://ryanlittle.5ogx2mg0'
+    });
+
+    map.addSource('bus71-source', {
+        'type': 'vector',
+        'url': 'mapbox://ryanlittle.dx4aug3f'
+    });
+
+    map.addLayer({
+        'id': 'bus71-line',
+        'type': 'line',
+        'source': 'bus71-source',
+        'source-layer': 'bus-71-53x4pr',
+        'paint': {
+            'line-color': '#1E90FF',
+            'line-width': 4,
+            'line-opacity': 0
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        }
+    });
+
+    map.addLayer({
+        'id': 'bus71-label',
+        'type': 'symbol',
+        'source': 'bus71-source',
+        'source-layer': 'bus-71-53x4pr',
+        'minzoom': 10,
+        'maxzoom': 22,
+        'layout': {
+            'text-field': 'Bus 71 route',
+            'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                10, 12,
+                12, 14,
+                14, 16
+            ],
+            'symbol-placement': 'line-center',
+            'text-offset': [0, -1],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-font': ['Open Sans Bold'],
+            'text-letter-spacing': 0.1
+        },
+        'paint': {
+            'text-color': '#8f25f8',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+        }
+    });
+
+    // Add Citysilver line and label
+    map.addLayer({
+        'id': 'citysilver-line',
+        'type': 'line',
+        'source': 'citysilver-source',
+        'source-layer': 'citysilver-bdl6gr',
+        'paint': {
+            'line-color': '#C0C0C0',
+            'line-width': 4,
+            'line-opacity': 0
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        }
+    });
+
+    map.addLayer({
+        'id': 'citysilver-label',
+        'type': 'symbol',
+        'source': 'citysilver-source',
+        'source-layer': 'citysilver-bdl6gr',
+        'minzoom': 10,
+        'maxzoom': 22,
+        'layout': {
+            'text-field': 'Citysilver bus line',
+            'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                10, 12,
+                12, 14,
+                14, 16
+            ],
+            'symbol-placement': 'line-center',
+            'text-offset': [0, -1],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-font': ['Open Sans Bold'],
+            'text-letter-spacing': 0.1
+        },
+        'paint': {
+            'text-color': '#C0C0C0',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+        }
+    });
+
+    // Add Cherry line and label
+    map.addLayer({
+        'id': 'cherry-line',
+        'type': 'line',
+        'source': 'cherry-source',
+        'source-layer': 'cherry-route-33ghrw',
+        'paint': {
+            'line-color': '#FF0000',
+            'line-width': 4,
+            'line-opacity': 0
+        },
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        }
+    });
+
+    map.addLayer({
+        'id': 'cherry-label',
+        'type': 'symbol',
+        'source': 'cherry-source',
+        'source-layer': 'cherry-route-33ghrw',
+        'minzoom': 10,
+        'maxzoom': 22,
+        'layout': {
+            'text-field': 'Cherry route',
+            'text-size': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                10, 12,
+                12, 14,
+                14, 16
+            ],
+            'symbol-placement': 'line-center',
+            'text-offset': [0, -1],
+            'text-allow-overlap': true,
+            'text-ignore-placement': true,
+            'text-font': ['Open Sans Bold'],
+            'text-letter-spacing': 0.1
+        },
+        'paint': {
+            'text-color': '#FF0000',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 2
+        }
+    });
+// Create custom HTML element for the marker
+const markerElement = document.createElement('div');
+    markerElement.className = 'custom-marker';
+    markerElement.style.cssText = `
+        background: white;
+        border-radius: 4px;
+        padding: 4px 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.8;
+    `;
+
+    // Add bus icon and time
+    markerElement.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="min-width: 16px;">
+        <path d="M4 16c0 1.1.9 2 2 2h1v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h6v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h1c1.1 0 2-.9 2-2V6c0-3-3-3-3-3H7S4 3 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="currentColor"/>
+    </svg>
+        tk min
+    `;
+
+    // Add the custom marker at the specified coordinates
+    const marker = new mapboxgl.Marker({
+        element: markerElement,
+        anchor: 'left',
+        opacity: 0.8
+    })
+    .setLngLat([-76.6062671262529, 39.27583784919608])
+    .addTo(map);
+
+    console.log('Marker added to map at specific coordinates');
+
+
+    // Create custom HTML element for the marker
+const secondmarkerElement = document.createElement('div');
+    secondmarkerElement.className = 'custom-marker';
+    secondmarkerElement.style.cssText = `
+        background: white;
+        border-radius: 4px;
+        padding: 4px 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0.8;
+    `;
+
+    // Add bus icon and time
+    secondmarkerElement.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="min-width: 16px;">
+        <path d="M4 16c0 1.1.9 2 2 2h1v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h6v2c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-2h1c1.1 0 2-.9 2-2V6c0-3-3-3-3-3H7S4 3 4 6v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="currentColor"/>
+    </svg>
+        tk min
+    `;
+
+    // Add the custom marker at the specified coordinates
+    const secondMarker = new mapboxgl.Marker({
+        element: secondmarkerElement,
+        anchor: 'left',
+        opacity: 0.8
+    })
+    .setLngLat([-76.60711509396111, 39.31155909381104])
+    .addTo(map);
+
+    console.log('Marker added to map at specific coordinates');
+
+});
