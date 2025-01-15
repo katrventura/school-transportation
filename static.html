@@ -73,13 +73,13 @@
     </div>
 
 <!-- anya -->
-<!-- <script>
+<script>
 
 document.addEventListener('DOMContentLoaded', () => {
     mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
     const anyaMap = new mapboxgl.Map({
         container: 'anya-map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
         center: [-76.619, 39.300],
         zoom: 11.5,
         maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
@@ -91,66 +91,69 @@ document.addEventListener('DOMContentLoaded', () => {
         keyboard: false
     });
 
-    anyaMap.on('load', () => {
-        anyaMap.addSource('anya-route', {
-            type: 'vector',
-            url: 'mapbox://ryanlittle.00kaja4r'
-        });
-    
-        anyaMap.addLayer({
-            id: 'anya-static-route',
-            type: 'line',
-            source: 'anya-route',
-            'source-layer': 'anya_route-8pmuhg',
-            layout: {
-                'line-cap': 'round',
-                'line-join': 'round'
-            },
-            paint: {
-                'line-color': '#bfdc18',
-                'line-width': 3,
-                'line-opacity': 1
-            }
-        });
-
-        anyaMap.addSource('anya-mervo', {
-            type: 'vector',
-            url: 'mapbox://ryanlittle.5sk5uh5i'
-        });
-
-        anyaMap.addLayer({
-            'id': 'anya-mervo-fill',
-            'type': 'fill',
-            'source': 'anya-mervo',
-            'source-layer': 'mervo-3pmloo',
-            'paint': {
-                'fill-color': '#ffffff',
-                'fill-opacity': 0.5
-            }
-        });
-
-        anyaMap.addLayer({
-            'id': 'anya-mervo-outline',
-            'type': 'line',
-            'source': 'anya-mervo',
-            'source-layer': 'mervo-3pmloo',
-            'paint': {
-                'line-color': '#ffffff',
-                'line-width': 1
-            }
-        });
-    });
 });
+
+    
+//     anyaMap.on('load', () => {
+//         anyaMap.addSource('anya-route', {
+//             type: 'vector',
+//             url: 'mapbox://ryanlittle.00kaja4r'
+//         });
+    
+//         anyaMap.addLayer({
+//             id: 'anya-static-route',
+//             type: 'line',
+//             source: 'anya-route',
+//             'source-layer': 'anya_route-8pmuhg',
+//             layout: {
+//                 'line-cap': 'round',
+//                 'line-join': 'round'
+//             },
+//             paint: {
+//                 'line-color': '#a009dc',
+//                 'line-width': 3,
+//                 'line-opacity': 1
+//             }
+//         });
+
+//         anyaMap.addSource('anya-mervo', {
+//             type: 'vector',
+//             url: 'mapbox://ryanlittle.5sk5uh5i'
+//         });
+
+//         anyaMap.addLayer({
+//             'id': 'anya-mervo-fill',
+//             'type': 'fill',
+//             'source': 'anya-mervo',
+//             'source-layer': 'mervo-3pmloo',
+//             'paint': {
+//                 'fill-color': '#ffffff',
+//                 'fill-opacity': 0.5
+//             }
+//         });
+
+//         anyaMap.addLayer({
+//             'id': 'anya-mervo-outline',
+//             'type': 'line',
+//             'source': 'anya-mervo',
+//             'source-layer': 'mervo-3pmloo',
+//             'paint': {
+//                 'line-color': '#ffffff',
+//                 'line-width': 1
+//             }
+//         });
+//     });
+// });
     
 
-</script> -->
+</script>
 
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', () => {
     mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
     const anyaMap = new mapboxgl.Map({
         container: 'anya-map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
         center: [-76.619, 39.300],
         zoom: 11.4,
         maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
@@ -280,14 +283,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-</script>
+</script> -->
 <!-- brooke -->
-<script>
+<!-- <script>
 document.addEventListener('DOMContentLoaded', () => {
     mapboxgl.accessToken = 'pk.eyJ1IjoicnlhbmxpdHRsZSIsImEiOiJjbGFiODV2dmcwMWlmM25wcXlrYzlwdzJzIn0.Tc5W4hPge3Q-Ql8EzRzTMw';
     const brookeMap = new mapboxgl.Map({
         container: 'brooke-map',
-        style: 'mapbox://styles/ryanlittle/cm3nh7x9k00r801rv5xpxftzt',
+        style: 'mapbox://styles/ryanlittle/cm4jntjys002t01ps9hqtfidl',
         center: [-76.619, 39.320],
         zoom: 11.5,
         maxBounds: [[-79.4877, 37.8855], [-75.0489, 39.723]],
@@ -349,6 +352,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
-</script>
+</script> -->
 </body>
 </html>
